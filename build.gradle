@@ -1,0 +1,75 @@
+plugins {
+    id 'java'
+    id "com.gradleup.shadow" version "9.0.1"
+    id "io.papermc.paperweight.userdev" version "${paperWeightUserDevVersion}"
+    id("xyz.jpenilla.run-paper") version "2.3.1" // Will use ${minecraftVersion} for the paper version
+}
+
+
+version = "1.0.0"
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://maven.devs.beer/"
+    }
+    maven {
+        url "https://repo.papermc.io/repository/maven-public/"
+    }
+    maven {
+        url "https://jitpack.io" // Toujours à la fin
+    }
+}
+
+dependencies {
+    paperweight.paperDevBundle "${minecraftVersion}-R0.1-SNAPSHOT"
+
+
+    implementation "org.jetbrains:annotations:${jetbrainsAnnotationsVersion}"
+    implementation "io.github.revxrsal:lamp.common:${revxrsalLampVersion}"
+    implementation "io.github.revxrsal:lamp.bukkit:${revxrsalLampVersion}"
+
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+    testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+}
+
+def targetJavaVersion = 21
+java {
+    sourceCompatibility = targetJavaVersion
+    targetCompatibility = targetJavaVersion
+}
+
+paperweight {
+  addServerDependencyTo = configurations.named(JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME).map { [it] as Set }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = targetJavaVersion
+}
+
+processResources {
+    filteringCharset = 'UTF-8'
+
+    def pluginProps = ["version": version, "minecraftVersion": minecraftVersion]
+    inputs.properties(pluginProps)
+
+    filesMatching('paper-plugin.yml') {
+        expand(pluginProps)
+    }
+}
+
+tasks.clean {
+    delete 'builds'
+}
+
+tasks.shadowJar {
+    destinationDirectory.set(file('./builds/'))
+    archiveFileName.set('UpsideDown.jar')
+
+    relocate("org.jetbrains.annotations", "fr.iambibi.upsidedown.shaded.org.jetbrains.annotations")
+    relocate("org.intellij", "fr.iambibi.upsidedown.shaded.org.intellij")
+    relocate("revxrsal.commands", "fr.iambibi.upsidedown.shaded.revxrsal.commands")
+}

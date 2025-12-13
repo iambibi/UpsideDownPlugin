@@ -1,0 +1,17 @@
+name: UpsideDown
+version: ${version}
+main: fr.iambibi.upsidedown.UpsideDown
+api-version: ${minecraftVersion}
+bootstrapper: fr.iambibi.upsidedown.UpsideDownBootstrap
+
+prefix: UD
+authors: [iambibi_]
+description: UpsideDown Plugin
+
+permissions:
+  upsidedown.commands.*:
+    description: "Donne l'accès au commandes"
+    default: true
+  upsidedown.admins.commands.*:
+    description: "Donne l'accès aux commandes d'administration"
+    default: op
