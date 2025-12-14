@@ -1,0 +1,8 @@
+main_world: "world"
+upsidedown_world: "world_inverted"
+
+radius-inverted: 400
+origin:
+  x: 0
+  y: 128
+  z: 0

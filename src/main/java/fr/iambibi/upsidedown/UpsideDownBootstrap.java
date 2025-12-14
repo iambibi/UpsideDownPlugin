@@ -15,7 +15,7 @@ import java.util.Objects;
 
 @SuppressWarnings("UnstableApiUsage")
 public class UpsideDownBootstrap implements PluginBootstrap {
-
+    public static final String DATAPACK_ID = "upsidedown_datapack";
     @Override
     public void bootstrap(@NotNull BootstrapContext context) {
         context.getLifecycleManager().registerEventHandler(LifecycleEvents.DATAPACK_DISCOVERY.newHandler(
@@ -23,7 +23,7 @@ public class UpsideDownBootstrap implements PluginBootstrap {
                     try {
                         URI uri = Objects.requireNonNull(getClass().getResource("/datapack")).toURI();
 
-                        event.registrar().discoverPack(uri, "upsidedown");
+                        event.registrar().discoverPack(uri, DATAPACK_ID);
                     } catch (URISyntaxException | IOException e) {
                         throw new RuntimeException(e);
                     }
