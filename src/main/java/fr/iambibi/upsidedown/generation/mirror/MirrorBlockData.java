@@ -1,11 +1,13 @@
-package fr.iambibi.upsidedown.utils;
+package fr.iambibi.upsidedown.generation.mirror;
 
+import org.bukkit.Rotation;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.*;
+import org.bukkit.block.data.type.Chest;
 
 import java.util.Set;
 
-public class BlockDataUtils {
+public class MirrorBlockData {
 
     /**
      * Mirrors BlockData along the X axis
@@ -15,13 +17,25 @@ public class BlockDataUtils {
      */
     public static BlockData mirrorBlockData(BlockData data) {
 
+        if (data instanceof Chest chest) {
+            chest.setFacing(mirrorBlockFaceX(chest.getFacing()));
+
+            if (chest.getType() == Chest.Type.LEFT) {
+                chest.setType(Chest.Type.RIGHT);
+            } else if (chest.getType() == Chest.Type.RIGHT) {
+                chest.setType(Chest.Type.LEFT);
+            }
+
+            return chest;
+        }
+
         // stairs, pistons, observers, etc.
         if (data instanceof Directional directional) {
             directional.setFacing(mirrorBlockFaceX(directional.getFacing()));
             return directional;
         }
 
-        // signs, skulls, item frames
+        // signs, skulls
         if (data instanceof Rotatable rotatable) {
             rotatable.setRotation(mirrorBlockFaceX(rotatable.getRotation()));
             return rotatable;
@@ -55,7 +69,7 @@ public class BlockDataUtils {
      * @param face The BlockFace to mirror
      * @return The mirrored BlockFace
      */
-    private static BlockFace mirrorBlockFaceX(BlockFace face) {
+    public static BlockFace mirrorBlockFaceX(BlockFace face) {
         return switch (face) {
             case EAST -> BlockFace.WEST;
             case WEST -> BlockFace.EAST;

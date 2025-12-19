@@ -1,11 +1,10 @@
 package fr.iambibi.upsidedown;
 
-import fr.iambibi.upsidedown.generation.InvertedGenerator;
+import fr.iambibi.upsidedown.generation.UpsideDownGenerator;
 import fr.iambibi.upsidedown.generation.UpsideDownWorldManager;
 import io.papermc.paper.datapack.Datapack;
 import lombok.Getter;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -76,7 +75,7 @@ public class UpsideDown extends JavaPlugin {
         }
 
         if (UpsideDownWorldManager.hasSeedChanged())
-            new InvertedGenerator(info).generate();
+            new UpsideDownGenerator(info).generate();
     }
 
     @Override

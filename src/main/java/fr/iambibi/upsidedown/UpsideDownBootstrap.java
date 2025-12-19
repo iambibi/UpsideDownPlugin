@@ -16,6 +16,10 @@ import java.util.Objects;
 @SuppressWarnings("UnstableApiUsage")
 public class UpsideDownBootstrap implements PluginBootstrap {
     public static final String DATAPACK_ID = "upsidedown_datapack";
+
+    // todo: biomes injector
+    // todo: timeline injector
+
     @Override
     public void bootstrap(@NotNull BootstrapContext context) {
         context.getLifecycleManager().registerEventHandler(LifecycleEvents.DATAPACK_DISCOVERY.newHandler(

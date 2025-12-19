@@ -3,6 +3,6 @@ upsidedown_world: "world_inverted"
 
 radius-inverted: 400
 origin:
-  x: 0
-  y: 128
-  z: 0
+  x: -14.5
+  y: 192
+  z: 157.5

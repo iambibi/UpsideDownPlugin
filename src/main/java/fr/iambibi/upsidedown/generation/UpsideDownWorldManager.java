@@ -30,7 +30,7 @@ public class UpsideDownWorldManager {
         plugin = UpsideDown.getInstance();
 
         DIMENSION_NAME = upsideDownName;
-        seedFile = new File(UpsideDown.getInstance().getDataFolder() + "/data/dream", "seed.yml");
+        seedFile = new File(UpsideDown.getInstance().getDataFolder() + "/data/", "seed.yml");
         loadSeed();
     }
 
