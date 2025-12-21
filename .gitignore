@@ -23,9 +23,8 @@
 hs_err_pid*
 replay_pid*
 
-.idea/*
-!.idea/icon.svg
-builds/
-build/
-.idea
+.gradle/
 .gradle
+build/
+
+**/build/
