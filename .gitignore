@@ -32,6 +32,7 @@ builds/
 # IntelliJ / IDE
 .idea/
 .idea
+.idea/*
 *.iml
 out/
 
