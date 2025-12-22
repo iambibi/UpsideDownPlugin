@@ -114,8 +114,8 @@ public class UpsideDownDatapack {
 
         // ** CONFIGURED FEATURES INJECT **
         new SculkFeatureInjector()
-                .amountPerCharge(32)
-                .chargeCount(8)
+                .amountPerCharge(24)
+                .chargeCount(3)
                 .spreadAttempts(64)
                 .spreadRounds(1)
                 .extraRareGrowths(0)
