@@ -37,7 +37,17 @@ public class MirrorBlockData {
 
         // signs, skulls
         if (data instanceof Rotatable rotatable) {
-            rotatable.setRotation(mirrorBlockFaceX(rotatable.getRotation()));
+
+            BlockFace face = rotatable.getRotation();
+
+            if (face == BlockFace.SELF) {
+                return rotatable;
+            }
+
+            int rotation = faceToRotation(face);
+            int mirrored = (16 - rotation) % 16;
+
+            rotatable.setRotation(rotationToFace(mirrored));
             return rotatable;
         }
 
@@ -98,6 +108,50 @@ public class MirrorBlockData {
             case NORTH_WEST -> Rail.Shape.NORTH_EAST;
             case SOUTH_EAST -> Rail.Shape.SOUTH_WEST;
             case SOUTH_WEST -> Rail.Shape.SOUTH_EAST;
+        };
+    }
+
+    private static int faceToRotation(BlockFace face) {
+        return switch (face) {
+            case SOUTH -> 0;
+            case SOUTH_SOUTH_WEST -> 1;
+            case SOUTH_WEST -> 2;
+            case WEST_SOUTH_WEST -> 3;
+            case WEST -> 4;
+            case WEST_NORTH_WEST -> 5;
+            case NORTH_WEST -> 6;
+            case NORTH_NORTH_WEST -> 7;
+            case NORTH -> 8;
+            case NORTH_NORTH_EAST -> 9;
+            case NORTH_EAST -> 10;
+            case EAST_NORTH_EAST -> 11;
+            case EAST -> 12;
+            case EAST_SOUTH_EAST -> 13;
+            case SOUTH_EAST -> 14;
+            case SOUTH_SOUTH_EAST -> 15;
+            default -> 0;
+        };
+    }
+
+    private static BlockFace rotationToFace(int rotation) {
+        return switch (rotation & 15) {
+            case 0 -> BlockFace.SOUTH;
+            case 1 -> BlockFace.SOUTH_SOUTH_WEST;
+            case 2 -> BlockFace.SOUTH_WEST;
+            case 3 -> BlockFace.WEST_SOUTH_WEST;
+            case 4 -> BlockFace.WEST;
+            case 5 -> BlockFace.WEST_NORTH_WEST;
+            case 6 -> BlockFace.NORTH_WEST;
+            case 7 -> BlockFace.NORTH_NORTH_WEST;
+            case 8 -> BlockFace.NORTH;
+            case 9 -> BlockFace.NORTH_NORTH_EAST;
+            case 10 -> BlockFace.NORTH_EAST;
+            case 11 -> BlockFace.EAST_NORTH_EAST;
+            case 12 -> BlockFace.EAST;
+            case 13 -> BlockFace.EAST_SOUTH_EAST;
+            case 14 -> BlockFace.SOUTH_EAST;
+            case 15 -> BlockFace.SOUTH_SOUTH_EAST;
+            default -> BlockFace.SOUTH;
         };
     }
 }

@@ -18,7 +18,7 @@ public class Palette {
             for (BlockReplacement replacement : replacements()) {
                 if (replacement.sources().contains(original)) {
                     Material newMaterial = pickRandom(replacement.targets());
-                    block.setType(newMaterial, false);
+                    block.setType(newMaterial, true);
                     return;
                 }
             }
