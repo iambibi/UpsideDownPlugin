@@ -1,18 +1,32 @@
 package fr.iambibi.upsidedown.generation;
 
+import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.generator.BiomeProvider;
 import org.bukkit.generator.WorldInfo;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class UpsideDownBiomeProvider extends BiomeProvider {
+
+    private World sourceWorld;
     private double originX;
     private double originZ;
 
-    public UpsideDownBiomeProvider(double originX, double originZ) {
+    public static Set<Biome> RED_INVERTED_SOURCE = Set.of(
+            Biome.DESERT,
+            Biome.BADLANDS,
+            Biome.ERODED_BADLANDS,
+            Biome.SAVANNA,
+            Biome.SAVANNA_PLATEAU
+    );
+
+    public UpsideDownBiomeProvider(World sourceWorld, double originX, double originZ) {
+        this.sourceWorld = sourceWorld;
         this.originX = originX;
         this.originZ = originZ;
     }
@@ -25,11 +39,15 @@ public class UpsideDownBiomeProvider extends BiomeProvider {
         int chunkOriginX = (int) Math.floor(originX) >> 4;
         int chunkOriginZ = (int) Math.floor(originZ) >> 4;
 
+        Biome sourceBiome = sourceWorld.getBiome(x, y, z);
+
         if (chunkX == chunkOriginX && chunkZ == chunkOriginZ) {
             return UpsideDownBiome.ORIGIN.getBiome();
+        } else if (RED_INVERTED_SOURCE.contains(sourceBiome)) {
+            return UpsideDownBiome.RED_INVERTED.getBiome();
+        } else {
+            return UpsideDownBiome.INVERTED.getBiome();
         }
-
-        return UpsideDownBiome.INVERTED.getBiome();
     }
 
     @Override

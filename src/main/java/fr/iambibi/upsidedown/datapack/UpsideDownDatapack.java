@@ -80,6 +80,46 @@ public class UpsideDownDatapack {
 
         invertedBiome.build(namespaceDir, "inverted");
 
+
+        BiomeInjector redInvertedBiome = new BiomeInjector()
+                .hasPrecipitation(false)
+                .dryFoliageColor("#8c0b0e")
+                .grassColor("#820003")
+                .waterColor("#530002")
+                .foliageColor("#8c0b0e")
+                .ambientParticle(Map.of(
+                        Particle.TRIAL_SPAWNER_DETECTION, 0.01,
+                        Particle.RAID_OMEN, 0.001,
+                        Particle.CRIMSON_SPORE, 0.08
+                ))
+                .addAttribute("visual/sky_light_color", "#cc0005")
+                .addAttribute("visual/sky_light_factor", 0.25)
+                .addAttribute("visual/star_brightness", 0.1)
+                .addAttribute("visual/cloud_color", "#840d0db8")
+                .addAttribute("visual/fog_color", "#492127")
+                .addAttribute("visual/fog_start_distance", 16.0)
+                .addAttribute("visual/fog_end_distance", 112.0)
+                .addAttribute("visual/sky_color", "#aa0004")
+                .ambientSoundMood(
+                        Sound.sound(Key.key("minecraft:ambient.warped_forest.mood"), Sound.Source.AMBIENT, 2f, 0.4f),
+                        6000,
+                        2,
+                        8
+                ).ambientSoundLoop(
+                        Sound.sound(Key.key("minecraft:ambient.warped_forest.loop"), Sound.Source.AMBIENT, 1f, 0.3f)
+                ).ambientSoundAddition(
+                        Sound.sound(Key.key("minecraft:entity.warden.sonic_boom"), Sound.Source.AMBIENT, 0.2f, 0.4f),
+                        0.0003
+                ).ambientSoundAddition(
+                        Sound.sound(Key.key("minecraft:entity.warden.emerge"), Sound.Source.AMBIENT, 0.1f, 0.1f),
+                        0.000111
+                ).ambientSoundAddition(
+                        Sound.sound(Key.key("minecraft:entity.warden.dig"), Sound.Source.AMBIENT, 0.1f, 0.1f),
+                        0.00111
+                );
+
+        redInvertedBiome.build(namespaceDir, "red_inverted");
+
         BiomeInjector originBiome = new BiomeInjector()
                 .hasPrecipitation(false)
                 .dryFoliageColor("#003d73")

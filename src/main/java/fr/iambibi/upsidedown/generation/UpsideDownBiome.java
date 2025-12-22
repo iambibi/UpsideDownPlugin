@@ -17,6 +17,9 @@ public enum UpsideDownBiome {
     INVERTED(
             NamespacedKey.fromString(UpsideDownDatapack.DATAPACK_NAMESPACE + ":inverted")
     ),
+    RED_INVERTED(
+            NamespacedKey.fromString(UpsideDownDatapack.DATAPACK_NAMESPACE + ":red_inverted")
+    ),
     ;
     private final Registry<@NotNull Biome> registry = RegistryAccess.registryAccess().getRegistry(RegistryKey.BIOME);
     private final NamespacedKey biomeKey;

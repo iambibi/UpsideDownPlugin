@@ -1,6 +1,5 @@
 package fr.iambibi.upsidedown.generation;
 
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import fr.iambibi.upsidedown.UpsideDown;
 import fr.iambibi.upsidedown.UpsideDownInfo;
 import fr.iambibi.upsidedown.datapack.UpsideDownDatapack;
@@ -8,6 +7,7 @@ import fr.iambibi.upsidedown.generation.mirror.*;
 import fr.iambibi.upsidedown.generation.palette.Palette;
 import fr.iambibi.upsidedown.utils.CoordinatesUtils;
 import fr.iambibi.upsidedown.utils.FeaturesUtils;
+import fr.iambibi.upsidedown.utils.StructureUtils;
 import net.minecraft.core.BlockPos;
 import org.bukkit.*;
 import org.bukkit.block.*;
@@ -17,6 +17,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static fr.iambibi.upsidedown.generation.UpsideDownBiomeProvider.RED_INVERTED_SOURCE;
 
 public class UpsideDownGenerator {
 
@@ -28,6 +30,14 @@ public class UpsideDownGenerator {
     private final int originZ;
     private final Palette.BlockPalette palette;
 
+    private final List<String> FLOATING_ISLAND_FEATURES = List.of(
+                "island_1",
+                "island_2",
+                "island_3",
+                "island_4",
+                "island_5",
+                "island_6"
+    );
     public UpsideDownGenerator(UpsideDownInfo info) {
         this.plugin = UpsideDown.getInstance();
         this.sourceWorld = info.sourceWorld();
@@ -36,6 +46,8 @@ public class UpsideDownGenerator {
         this.originX = info.originX();
         this.originZ = info.originZ();
         this.palette = info.palette();
+
+        StructureUtils.preloadStructures(FLOATING_ISLAND_FEATURES);
     }
 
     /**
@@ -127,7 +139,8 @@ public class UpsideDownGenerator {
         int min = -chunkRadius;
         int max = chunkRadius;
 
-        int[] processedFeatures = {0};
+        int[] processedSculkFeatures = {0};
+        int[] processedFloatingIslandFeatures = {0};
 
         plugin.getLogger().info("Start features generation");
 
@@ -136,7 +149,8 @@ public class UpsideDownGenerator {
                 max, max,
                 false,
                 () -> {
-                    List<BlockPos> collected = new ArrayList<>();
+                    List<BlockPos> sculkFeaturesCollected = new ArrayList<>();
+                    List<Location> floatingIslandCollected = new ArrayList<>();
 
                     for (int cx = min; cx <= max; cx++) {
                         for (int cz = min; cz <= max; cz++) {
@@ -148,29 +162,53 @@ public class UpsideDownGenerator {
                                     int globalZ = cz * 16 + z;
 
                                     if (!isInsideRadius(globalX, globalZ)) continue;
-                                    if (ThreadLocalRandom.current().nextDouble() > 0.077) continue;
+
 
                                     int surfaceY = sourceWorld.getHighestBlockYAt(globalX, globalZ);
                                     if (surfaceY <= sourceWorld.getMinHeight()) continue;
 
-                                    int[] mirrored = CoordinatesUtils.convertCoordinates(
-                                            globalX, surfaceY, globalZ, originX
-                                    );
+                                    Biome biome = sourceWorld.getBiome(globalX, surfaceY, globalZ);
 
-                                    collected.add(new BlockPos(
-                                            mirrored[0],
-                                            mirrored[1],
-                                            mirrored[2]
-                                    ));
+                                    // Sculk Features
+                                    if (ThreadLocalRandom.current().nextDouble() <= 0.077 && !RED_INVERTED_SOURCE.contains(biome)) {
+
+                                        int[] mirrored = CoordinatesUtils.convertCoordinates(
+                                                globalX, surfaceY, globalZ, originX
+                                        );
+
+                                        sculkFeaturesCollected.add(new BlockPos(
+                                                mirrored[0],
+                                                mirrored[1],
+                                                mirrored[2]
+                                        ));
+                                    }
+
+                                    // Floating Island Features
+                                    if (RED_INVERTED_SOURCE.contains(biome)) {
+                                        for (int y = surfaceY + 40; y < surfaceY + 140; y++) {
+                                            if (ThreadLocalRandom.current().nextDouble() <= 0.017) {
+                                                floatingIslandCollected.add(CoordinatesUtils.convertLocation(
+                                                        new Location(
+                                                                sourceWorld,
+                                                                globalX,
+                                                                y,
+                                                                globalZ
+                                                        ),
+                                                        originX
+                                                ));
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
 
-                    plugin.getLogger().info("Collected " + collected.size() + " sculk path positions");
+                    plugin.getLogger().info("Collected " + sculkFeaturesCollected.size() + " sculk path positions");
+                    plugin.getLogger().info("Collected " + floatingIslandCollected.size() + " sculk path positions");
 
-                    Iterator<BlockPos> iterator = new ArrayList<>(collected).iterator();
-
+                    // Sculk Features placement
+                    Iterator<BlockPos> iterator = new ArrayList<>(sculkFeaturesCollected).iterator();
                     new BukkitRunnable() {
                         @Override
                         public void run() {
@@ -189,12 +227,51 @@ public class UpsideDownGenerator {
                                 } catch (Throwable ignored) {
                                 }
 
-                                processedFeatures[0]++;
+                                processedSculkFeatures[0]++;
                                 placed++;
 
-                                int percent = (int) ((processedFeatures[0] / (double) collected.size()) * 100);
-                                if (processedFeatures[0] % Math.max(collected.size() / 10, 1) == 0) {
-                                    plugin.getLogger().info("UpsideDown feature generation progress: " + percent + "% (" + processedFeatures[0] + "/" + collected.size() + " features)");
+                                int percent = (int) ((processedSculkFeatures[0] / (double) sculkFeaturesCollected.size()) * 100);
+                                if (processedSculkFeatures[0] % Math.max(sculkFeaturesCollected.size() / 10, 1) == 0) {
+                                    plugin.getLogger().info("UpsideDown feature generation progress: " + percent + "% (" + processedSculkFeatures[0] + "/" + sculkFeaturesCollected.size() + " sculk features)");
+                                }
+                            }
+
+                            if (!iterator.hasNext()) {
+                                cancel();
+                                plugin.getLogger().info("Features generation finished");
+                                Bukkit.getScheduler().runTaskLater(plugin, () -> invertEntities(), 40L);
+                            }
+                        }
+
+                    }.runTaskTimer(plugin, 1L, 1L);
+
+                    // Floating Island placement
+                    Iterator<Location> iterator1 = new ArrayList<>(floatingIslandCollected).iterator();
+                    new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            int placed = 0;
+
+                            while (iterator1.hasNext() && placed < 250) {
+                                Location pos = iterator1.next();
+
+                                try {
+                                    StructureUtils.placeStructure(
+                                            StructureUtils.getCachedStructure(FLOATING_ISLAND_FEATURES.get(ThreadLocalRandom.current().nextInt(FLOATING_ISLAND_FEATURES.size()))),
+                                            pos,
+                                            true,
+                                            true,
+                                            true
+                                    );
+                                } catch (Throwable ignored) {
+                                }
+
+                                processedFloatingIslandFeatures[0]++;
+                                placed++;
+
+                                int percent = (int) ((processedFloatingIslandFeatures[0] / (double) floatingIslandCollected.size()) * 100);
+                                if (processedFloatingIslandFeatures[0] % Math.max(floatingIslandCollected.size() / 10, 1) == 0) {
+                                    plugin.getLogger().info("UpsideDown feature generation progress: " + percent + "% (" + processedFloatingIslandFeatures[0] + "/" + floatingIslandCollected.size() + " islands features)");
                                 }
                             }
 
