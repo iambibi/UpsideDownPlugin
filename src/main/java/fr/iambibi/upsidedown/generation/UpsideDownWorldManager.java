@@ -19,7 +19,7 @@ public class UpsideDownWorldManager {
 
     private static UpsideDown plugin;
 
-    private static String DIMENSION_NAME;
+    public static String DIMENSION_NAME;
     private static File seedFile;
     private static FileConfiguration seedConfig;
 

@@ -1,5 +1,6 @@
 package fr.iambibi.upsidedown;
 
+import fr.iambibi.upsidedown.additions.OriginTask;
 import fr.iambibi.upsidedown.datapack.UpsideDownDatapack;
 import fr.iambibi.upsidedown.datapack.injectors.DimensionTypeInjector;
 import fr.iambibi.upsidedown.generation.UpsideDownGenerator;
@@ -70,6 +71,11 @@ public class UpsideDown extends JavaPlugin {
         /* MAIN */
         World upsideDownWorld = UpsideDownWorldManager.createInvertedWorld(mainWorld, upsideDownWorldName, originX, originZ, radius);
 
+        if (upsideDownWorld == null) {
+            getSLF4JLogger().error("L'UpsideDown '{}' n'a pas pu être créé !", upsideDownWorldName);
+            return;
+        }
+
         UpsideDownInfo info = new UpsideDownInfo(
                 mainWorld,
                 upsideDownWorld,
@@ -80,13 +86,15 @@ public class UpsideDown extends JavaPlugin {
                 PaletteRegistry.get(paletteId)
         );
 
-        if (upsideDownWorld == null) {
-            getSLF4JLogger().error("L'UpsideDown '{}' n'a pas pu être créé !", upsideDownWorldName);
-            return;
-        }
-
         if (UpsideDownWorldManager.hasSeedChanged())
             new UpsideDownGenerator(info).generate();
+
+        Bukkit.getScheduler().runTaskTimer(
+                this,
+                new OriginTask(upsideDownWorld, originX, originY, originZ),
+                0L,
+                20L
+        );
     }
 
     @Override
