@@ -9,11 +9,11 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 public class ParticleUtils {
-    public static void sendParticlePacket(Player player, Location loc, Particle particle) {
+    public static <T> void sendParticlePacket(Player player, Location loc, Particle particle, T data) {
         ServerPlayer nmsPlayer = ((CraftPlayer) player).getHandle();
 
         ClientboundLevelParticlesPacket packet = new ClientboundLevelParticlesPacket(
-                CraftParticle.createParticleParam(particle, null),
+                CraftParticle.createParticleParam(particle, data),
                 false,
                 false,
                 loc.getX(), loc.getY(), loc.getZ(),

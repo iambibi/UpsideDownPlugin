@@ -2,10 +2,7 @@ package fr.iambibi.upsidedown.additions;
 
 import fr.iambibi.upsidedown.utils.ParticleUtils;
 import fr.iambibi.upsidedown.utils.WorldUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
@@ -36,7 +33,15 @@ public class OriginTask implements Runnable {
             ParticleUtils.sendParticlePacket(
                     onlinePlayer,
                     origin,
-                    Particle.FLASH
+                    Particle.FLASH,
+                    Color.WHITE
+            );
+
+            ParticleUtils.sendParticlePacket(
+                    onlinePlayer,
+                    origin,
+                    Particle.FLASH,
+                    Color.PURPLE
             );
         }
 
