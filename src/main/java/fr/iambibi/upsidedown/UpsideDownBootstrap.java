@@ -1,34 +1,30 @@
 package fr.iambibi.upsidedown;
 
+import fr.iambibi.upsidedown.datapack.UpsideDownDatapack;
 import io.papermc.paper.plugin.bootstrap.BootstrapContext;
 import io.papermc.paper.plugin.bootstrap.PluginBootstrap;
 import io.papermc.paper.plugin.bootstrap.PluginProviderContext;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import io.papermc.paper.registry.event.RegistryEvents;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Objects;
+import java.net.URL;
 
 @SuppressWarnings("UnstableApiUsage")
 public class UpsideDownBootstrap implements PluginBootstrap {
-    public static final String DATAPACK_ID = "upsidedown_datapack";
-
-    // todo: biomes injector
-    // todo: timeline injector
+    // todo: dimension types and timeline injector : wait https://github.com/PaperMC/Paper/pull/12922
 
     @Override
     public void bootstrap(@NotNull BootstrapContext context) {
         context.getLifecycleManager().registerEventHandler(LifecycleEvents.DATAPACK_DISCOVERY.newHandler(
                 event -> {
                     try {
-                        URI uri = Objects.requireNonNull(getClass().getResource("/datapack")).toURI();
-
-                        event.registrar().discoverPack(uri, DATAPACK_ID);
-                    } catch (URISyntaxException | IOException e) {
+                        event.registrar().removeDiscoveredPack(UpsideDownDatapack.DATAPACK_ID);
+                        event.registrar().discoverPack(UpsideDownDatapack.build(context), UpsideDownDatapack.DATAPACK_ID);
+                    } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
                 }
