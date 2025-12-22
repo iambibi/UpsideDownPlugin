@@ -1,14 +1,22 @@
 package fr.iambibi.upsidedown.generation;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import fr.iambibi.upsidedown.UpsideDown;
 import fr.iambibi.upsidedown.UpsideDownInfo;
+import fr.iambibi.upsidedown.datapack.UpsideDownDatapack;
 import fr.iambibi.upsidedown.generation.mirror.*;
+import fr.iambibi.upsidedown.generation.palette.Palette;
 import fr.iambibi.upsidedown.utils.CoordinatesUtils;
+import fr.iambibi.upsidedown.utils.FeaturesUtils;
+import net.minecraft.core.BlockPos;
 import org.bukkit.*;
 import org.bukkit.block.*;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.*;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class UpsideDownGenerator {
 
@@ -18,6 +26,7 @@ public class UpsideDownGenerator {
     private final int radius;
     private final int originX;
     private final int originZ;
+    private final Palette.BlockPalette palette;
 
     public UpsideDownGenerator(UpsideDownInfo info) {
         this.plugin = UpsideDown.getInstance();
@@ -26,6 +35,7 @@ public class UpsideDownGenerator {
         this.radius = info.radius();
         this.originX = info.originX();
         this.originZ = info.originZ();
+        this.palette = info.palette();
     }
 
     /**
@@ -48,7 +58,7 @@ public class UpsideDownGenerator {
                     cancel();
                     plugin.getLogger().info("UpsideDown world generation finished (" + processedChunks[0] + " chunks)");
 
-                    Bukkit.getScheduler().runTaskLater(plugin, () -> invertEntities(), 40L);
+                    Bukkit.getScheduler().runTaskLater(plugin, () -> generateFeatures(), 40L);
                     return;
                 }
 
@@ -93,6 +103,8 @@ public class UpsideDownGenerator {
 
                                 BlockState sourceState = sourceWorld.getBlockAt(globalX, finalY, globalZ).getState();
                                 MirrorBlockStates.mirrorBlockState(sourceState, targetBlock.getState());
+
+                                palette.apply(targetBlock);
                             });
                         }
                     }
@@ -108,6 +120,94 @@ public class UpsideDownGenerator {
                 chunkZ++;
             }
         }.runTaskTimer(plugin, 0L, 1L);
+    }
+
+    public void generateFeatures() {
+        int chunkRadius = radius / 16 + 1;
+        int min = -chunkRadius;
+        int max = chunkRadius;
+
+        int[] processedFeatures = {0};
+
+        plugin.getLogger().info("Start features generation");
+
+        sourceWorld.getChunksAtAsync(
+                min, min,
+                max, max,
+                false,
+                () -> {
+                    List<BlockPos> collected = new ArrayList<>();
+
+                    for (int cx = min; cx <= max; cx++) {
+                        for (int cz = min; cz <= max; cz++) {
+
+                            for (int x = 0; x < 16; x++) {
+                                for (int z = 0; z < 16; z++) {
+
+                                    int globalX = cx * 16 + x;
+                                    int globalZ = cz * 16 + z;
+
+                                    if (!isInsideRadius(globalX, globalZ)) continue;
+                                    if (ThreadLocalRandom.current().nextDouble() > 0.077) continue;
+
+                                    int surfaceY = sourceWorld.getHighestBlockYAt(globalX, globalZ);
+                                    if (surfaceY <= sourceWorld.getMinHeight()) continue;
+
+                                    int[] mirrored = CoordinatesUtils.convertCoordinates(
+                                            globalX, surfaceY, globalZ, originX
+                                    );
+
+                                    collected.add(new BlockPos(
+                                            mirrored[0],
+                                            mirrored[1],
+                                            mirrored[2]
+                                    ));
+                                }
+                            }
+                        }
+                    }
+
+                    plugin.getLogger().info("Collected " + collected.size() + " sculk path positions");
+
+                    Iterator<BlockPos> iterator = new ArrayList<>(collected).iterator();
+
+                    new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            int placed = 0;
+
+                            while (iterator.hasNext() && placed < 250) {
+                                BlockPos pos = iterator.next();
+
+                                try {
+                                    FeaturesUtils.placeFeature(
+                                            targetWorld,
+                                            UpsideDownDatapack.DATAPACK_NAMESPACE,
+                                            "sculk_patch_buffed",
+                                            pos
+                                    );
+                                } catch (Throwable ignored) {
+                                }
+
+                                processedFeatures[0]++;
+                                placed++;
+
+                                int percent = (int) ((processedFeatures[0] / (double) collected.size()) * 100);
+                                if (processedFeatures[0] % Math.max(collected.size() / 10, 1) == 0) {
+                                    plugin.getLogger().info("UpsideDown feature generation progress: " + percent + "% (" + processedFeatures[0] + "/" + collected.size() + " features)");
+                                }
+                            }
+
+                            if (!iterator.hasNext()) {
+                                cancel();
+                                plugin.getLogger().info("Features generation finished");
+                                Bukkit.getScheduler().runTaskLater(plugin, () -> invertEntities(), 40L);
+                            }
+                        }
+
+                    }.runTaskTimer(plugin, 1L, 1L);
+                }
+        );
     }
 
     public void invertEntities() {

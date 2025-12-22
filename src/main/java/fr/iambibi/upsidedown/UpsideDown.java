@@ -1,7 +1,10 @@
 package fr.iambibi.upsidedown;
 
+import fr.iambibi.upsidedown.datapack.UpsideDownDatapack;
+import fr.iambibi.upsidedown.datapack.injectors.DimensionTypeInjector;
 import fr.iambibi.upsidedown.generation.UpsideDownGenerator;
 import fr.iambibi.upsidedown.generation.UpsideDownWorldManager;
+import fr.iambibi.upsidedown.generation.palette.PaletteRegistry;
 import io.papermc.paper.datapack.Datapack;
 import lombok.Getter;
 import org.bukkit.*;
@@ -25,7 +28,7 @@ public class UpsideDown extends JavaPlugin {
         configs = this.getConfig();
 
         logLoadMessage();
-        Datapack pack = this.getServer().getDatapackManager().getPack(getPluginMeta().getName() + "/" + UpsideDownBootstrap.DATAPACK_ID);
+        Datapack pack = this.getServer().getDatapackManager().getPack(getPluginMeta().getName() + "/" + UpsideDownDatapack.DATAPACK_ID);
         if (pack != null) {
             if (pack.isEnabled()) {
                 getSLF4JLogger().info("\u001B[32m✔ Lancement du datapack réussi\u001B[0m");
@@ -35,7 +38,7 @@ public class UpsideDown extends JavaPlugin {
         }
 
         String mainWorldName = getConfig().getString("main_world");
-        String upsideDownWorldName = getConfig().getString("upsidedown_world");
+        String upsideDownWorldName = UpsideDownDatapack.DIMENSION_NAME;
 
         int radius = getConfig().getInt("radius-inverted");
 
@@ -43,8 +46,15 @@ public class UpsideDown extends JavaPlugin {
         int originY = getConfig().getInt("origin.y");
         int originZ = getConfig().getInt("origin.z");
 
-        if (mainWorldName == null || upsideDownWorldName == null) {
-            getSLF4JLogger().error("Erreur de config : un des éléments de config sont nul !");
+        String paletteId = getConfig().getString("palette");
+
+        if (mainWorldName == null) {
+            getSLF4JLogger().error("Erreur de config : main_world est nul !");
+            return;
+        }
+
+        if (paletteId == null) {
+            getSLF4JLogger().error("Erreur de config : palette est nul !");
             return;
         }
 
@@ -58,7 +68,7 @@ public class UpsideDown extends JavaPlugin {
         UpsideDownWorldManager.init(upsideDownWorldName);
 
         /* MAIN */
-        World upsideDownWorld = UpsideDownWorldManager.createInvertedWorld(upsideDownWorldName, originX, originZ, radius);
+        World upsideDownWorld = UpsideDownWorldManager.createInvertedWorld(mainWorld, upsideDownWorldName, originX, originZ, radius);
 
         UpsideDownInfo info = new UpsideDownInfo(
                 mainWorld,
@@ -66,7 +76,8 @@ public class UpsideDown extends JavaPlugin {
                 originX,
                 originY,
                 originZ,
-                radius
+                radius,
+                PaletteRegistry.get(paletteId)
         );
 
         if (upsideDownWorld == null) {

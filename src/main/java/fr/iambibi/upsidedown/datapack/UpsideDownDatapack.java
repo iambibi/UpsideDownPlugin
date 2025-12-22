@@ -114,13 +114,13 @@ public class UpsideDownDatapack {
 
         // ** CONFIGURED FEATURES INJECT **
         new SculkFeatureInjector()
-                .amountPerCharge(60)
-                .catalystChance(0.4)
-                .chargeCount(12)
-                .spreadAttempts(48)
-                .spreadRounds(3)
-                .extraRareGrowths(1)
-                .growthRounds(2)
+                .amountPerCharge(32)
+                .chargeCount(8)
+                .spreadAttempts(64)
+                .spreadRounds(1)
+                .extraRareGrowths(0)
+                .growthRounds(0)
+                .catalystChance(0.2)
                 .build(namespaceDir, "sculk_patch_buffed");
 
         return datapackDir.toUri();

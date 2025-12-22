@@ -1,11 +1,12 @@
 package fr.iambibi.upsidedown.generation;
 
 import fr.iambibi.upsidedown.UpsideDown;
-import fr.iambibi.upsidedown.UpsideDownInfo;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
-import org.bukkit.WorldType;
+import fr.iambibi.upsidedown.datapack.UpsideDownDatapack;
+import fr.iambibi.upsidedown.utils.CoordinatesUtils;
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
+import org.bukkit.*;
+import org.bukkit.block.Biome;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -47,13 +48,14 @@ public class UpsideDownWorldManager {
 
     /**
      * Creates or loads an inverted world with the specified parameters.
+     * @param sourceWorld The source world to invert.
      * @param name The name of the world.
      * @param originX The X coordinate of the origin.
      * @param originZ The Z coordinate of the origin.
      * @param radius The radius of the inverted world.
      * @return The created or loaded inverted world.
      */
-    public static World createInvertedWorld(String name, int originX, int originZ, int radius) {
+    public static World createInvertedWorld(World sourceWorld, String name, int originX, int originZ, int radius) {
         WorldCreator creator = new WorldCreator(name);
 
         File worldFolder = new File(Bukkit.getWorldContainer(), name);
@@ -70,13 +72,23 @@ public class UpsideDownWorldManager {
 
         creator.environment(World.Environment.NORMAL);
         creator.type(WorldType.FLAT);
-        creator.generatorSettings("{\"biome\":\"minecraft:the_void\",\"layers\":[{\"block\":\"minecraft:air\",\"height\":1}]}");
+        creator.generatorSettings("{\"biome\":\"upsidedown:inverted\",\"layers\":[{\"block\":\"minecraft:air\",\"height\":1}]}");
+        creator.biomeProvider(new UpsideDownBiomeProvider(originX, originZ));
         creator.generateStructures(false);
         creator.generator(new WallChunkGenerator(originX, originZ, radius));
 
         World invertedWorld = creator.createWorld();
 
         invertedWorld.getWorldBorder().setSize(radius*2);
+        invertedWorld.getWorldBorder().setCenter(originX, originZ);
+
+        invertedWorld.setSpawnLocation(CoordinatesUtils.convertLocation(sourceWorld.getSpawnLocation(), originX));
+
+        invertedWorld.setGameRule(GameRules.LOCATOR_BAR, false);
+        invertedWorld.setGameRule(GameRules.KEEP_INVENTORY, false);
+        invertedWorld.setGameRule(GameRules.ADVANCE_TIME, false);
+        
+        invertedWorld.setTime(18000);
 
         return creator.createWorld();
     }
