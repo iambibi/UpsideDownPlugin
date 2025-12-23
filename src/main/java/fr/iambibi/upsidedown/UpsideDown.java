@@ -2,8 +2,7 @@ package fr.iambibi.upsidedown;
 
 import fr.iambibi.upsidedown.additions.OriginTask;
 import fr.iambibi.upsidedown.datapack.UpsideDownDatapack;
-import fr.iambibi.upsidedown.datapack.injectors.DimensionTypeInjector;
-import fr.iambibi.upsidedown.generation.UpsideDownGenerator;
+import fr.iambibi.upsidedown.generation.generator.UpsideDownGenerator;
 import fr.iambibi.upsidedown.generation.UpsideDownWorldManager;
 import fr.iambibi.upsidedown.generation.palette.PaletteRegistry;
 import io.papermc.paper.datapack.Datapack;
@@ -47,6 +46,7 @@ public class UpsideDown extends JavaPlugin {
         int originY = getConfig().getInt("origin.y");
         int originZ = getConfig().getInt("origin.z");
 
+        //todo: remove palette config + make palette assocaciated to biome
         String paletteId = getConfig().getString("palette");
 
         if (mainWorldName == null) {
@@ -87,7 +87,7 @@ public class UpsideDown extends JavaPlugin {
         );
 
         if (UpsideDownWorldManager.hasSeedChanged())
-            new UpsideDownGenerator(info).generate();
+            new UpsideDownGenerator(info).start();
 
         Bukkit.getScheduler().runTaskTimer(
                 this,

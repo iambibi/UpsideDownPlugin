@@ -90,7 +90,7 @@ public class UpsideDownWorldManager {
         
         invertedWorld.setTime(18000);
 
-        return creator.createWorld();
+        return invertedWorld;
     }
 
     /**

@@ -1,5 +1,6 @@
 package fr.iambibi.upsidedown.generation;
 
+import fr.iambibi.upsidedown.utils.CoordinatesUtils;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.generator.BiomeProvider;
@@ -13,9 +14,9 @@ import java.util.Set;
 
 public class UpsideDownBiomeProvider extends BiomeProvider {
 
-    private World sourceWorld;
-    private double originX;
-    private double originZ;
+    private final World sourceWorld;
+    private final double originX;
+    private final double originZ;
 
     public static Set<Biome> RED_INVERTED_SOURCE = Set.of(
             Biome.DESERT,
@@ -39,7 +40,8 @@ public class UpsideDownBiomeProvider extends BiomeProvider {
         int chunkOriginX = (int) Math.floor(originX) >> 4;
         int chunkOriginZ = (int) Math.floor(originZ) >> 4;
 
-        Biome sourceBiome = sourceWorld.getBiome(x, y, z);
+        int[] mirrorCoordinates = CoordinatesUtils.convertCoordinates(x, y, z, (int) originX);
+        Biome sourceBiome = sourceWorld.getBiome(mirrorCoordinates[0], mirrorCoordinates[1], mirrorCoordinates[2]);
 
         if (chunkX == chunkOriginX && chunkZ == chunkOriginZ) {
             return UpsideDownBiome.ORIGIN.getBiome();

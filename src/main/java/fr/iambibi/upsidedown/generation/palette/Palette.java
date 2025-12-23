@@ -2,9 +2,9 @@ package fr.iambibi.upsidedown.generation.palette;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Palette {
@@ -12,21 +12,41 @@ public class Palette {
         String id();
         List<BlockReplacement> replacements();
 
-        default void apply(Block block) {
-            Material original = block.getType();
-
+        default Map<Material, List<Material>> buildReplacementCache() {
+            Map<Material, List<Material>> cache = new HashMap<>();
             for (BlockReplacement replacement : replacements()) {
-                if (replacement.sources().contains(original)) {
-                    Material newMaterial = pickRandom(replacement.targets());
-                    block.setType(newMaterial, true);
-                    return;
+                List<Material> targetList = new ArrayList<>(replacement.targets());
+                for (Material source : replacement.sources()) {
+                    cache.put(source, targetList);
                 }
+            }
+            return cache;
+        }
+
+        default BlockData applyToBlockData(BlockData data, Map<Material, List<Material>> cache) {
+            Material original = data.getMaterial();
+            List<Material> targets = cache.get(original);
+
+            if (targets != null && !targets.isEmpty()) {
+                Material newMaterial = pickRandom(targets);
+                return newMaterial.createBlockData();
+            }
+
+            return data;
+        }
+
+        default void apply(Block block, Map<Material, List<Material>> cache) {
+            Material original = block.getType();
+            List<Material> targets = cache.get(original);
+
+            if (targets != null && !targets.isEmpty()) {
+                Material newMaterial = pickRandom(targets);
+                block.setType(newMaterial, false);
             }
         }
 
-        private static Material pickRandom(Set<Material> materials) {
-            int index = ThreadLocalRandom.current().nextInt(materials.size());
-            return materials.stream().skip(index).findFirst().orElseThrow();
+        private static Material pickRandom(List<Material> materials) {
+            return materials.get(ThreadLocalRandom.current().nextInt(materials.size()));
         }
     }
 
