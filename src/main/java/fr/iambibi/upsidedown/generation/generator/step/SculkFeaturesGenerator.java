@@ -1,25 +1,36 @@
 package fr.iambibi.upsidedown.generation.generator.step;
 
-import fr.iambibi.upsidedown.datapack.UpsideDownDatapack;
+import fr.iambibi.upsidedown.fixes.postprocesswarn.SculkPatchFeature;
 import fr.iambibi.upsidedown.generation.generator.GenerationContext;
-import fr.iambibi.upsidedown.utils.FeaturesUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.feature.configurations.SculkPatchConfiguration;
+import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Iterator;
 import java.util.List;
 
 public class SculkFeaturesGenerator implements GenerationStep {
+
+    private final int SCULK_FEATURE_BY_TICK = 1000;
+
     private final List<BlockPos> positions;
     public SculkFeaturesGenerator(List<BlockPos> positions) {
         this.positions = positions;
     }
 
+    //todo remove temporary sculk feature generator and integrate NMS code modified without PostProcessing
     @Override
     public void start(GenerationContext ctx, Runnable onComplete) {
         int[] processed = {0};
 
         ctx.plugin.getLogger().info("Starting sculk features placement (" + positions.size() + " features)");
+
+        ServerLevel level = ((CraftWorld) ctx.targetWorld).getHandle();
 
         Iterator<BlockPos> iterator = positions.iterator();
         new BukkitRunnable() {
@@ -27,16 +38,12 @@ public class SculkFeaturesGenerator implements GenerationStep {
             public void run() {
                 int placed = 0;
 
-                while (iterator.hasNext() && placed < 250) {
-                    BlockPos pos = iterator.next();
+                while (iterator.hasNext() && placed < SCULK_FEATURE_BY_TICK) {
+                    BlockPos pos = iterator.next().above();
+
 
                     try {
-                        FeaturesUtils.placeFeature(
-                                ctx.targetWorld,
-                                UpsideDownDatapack.DATAPACK_NAMESPACE,
-                                "sculk_patch_buffed",
-                                pos
-                        );
+                        SculkPatchFeature.place(level, pos, level.random, new fr.iambibi.upsidedown.fixes.postprocesswarn.SculkPatchConfiguration());
                     } catch (Throwable ignored) {
                     }
 
@@ -55,6 +62,6 @@ public class SculkFeaturesGenerator implements GenerationStep {
                     onComplete.run();
                 }
             }
-        }.runTaskTimer(ctx.plugin, 1L, 1L);
+        }.runTaskTimer(ctx.plugin, 0L, 1L);
     }
 }
