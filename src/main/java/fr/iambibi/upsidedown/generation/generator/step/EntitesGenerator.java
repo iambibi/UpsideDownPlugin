@@ -41,7 +41,6 @@ public class EntitesGenerator implements GenerationStep {
                         continue;
                     }
 
-                    // Charger le chunk seulement s'il existe déjà (pas de génération)
                     if (!ctx.sourceWorld.isChunkLoaded(chunkX, chunkZ)) {
                         ctx.sourceWorld.loadChunk(chunkX, chunkZ, false);
                     }

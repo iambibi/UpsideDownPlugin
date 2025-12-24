@@ -68,7 +68,7 @@ public class FeaturesGenerator implements GenerationStep {
                             Biome biome = ctx.sourceWorld.getBiome(globalX, surfaceY, globalZ);
 
                             // Sculk Features
-                            if (ThreadLocalRandom.current().nextDouble() <= 0.077 && !RED_INVERTED_SOURCE.contains(biome)) {
+                            if (ThreadLocalRandom.current().nextDouble() <= 0.037 && !RED_INVERTED_SOURCE.contains(biome)) {
                                 int[] mirrored = CoordinatesUtils.convertCoordinates(
                                         globalX, surfaceY, globalZ, ctx.originX
                                 );

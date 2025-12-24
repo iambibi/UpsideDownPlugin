@@ -13,7 +13,6 @@ public class GenerationContext {
     public final int radius;
     public final int originX;
     public final int originZ;
-    public final Palette.BlockPalette palette;
 
     public GenerationContext(UpsideDownInfo info) {
         this.plugin = UpsideDown.getInstance();
@@ -22,7 +21,6 @@ public class GenerationContext {
         this.radius = info.radius();
         this.originX = info.originX();
         this.originZ = info.originZ();
-        this.palette = info.palette();
     }
 
     /**

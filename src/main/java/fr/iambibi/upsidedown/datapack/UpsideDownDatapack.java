@@ -152,17 +152,6 @@ public class UpsideDownDatapack {
 
         originBiome.build(namespaceDir, "origin");
 
-        // ** CONFIGURED FEATURES INJECT **
-        new SculkFeatureInjector()
-                .amountPerCharge(24)
-                .chargeCount(3)
-                .spreadAttempts(64)
-                .spreadRounds(1)
-                .extraRareGrowths(0)
-                .growthRounds(0)
-                .catalystChance(0.2)
-                .build(namespaceDir, "sculk_patch_buffed");
-
         return datapackDir.toUri();
 
     }

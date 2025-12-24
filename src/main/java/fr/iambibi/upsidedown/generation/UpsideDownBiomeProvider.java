@@ -45,10 +45,8 @@ public class UpsideDownBiomeProvider extends BiomeProvider {
 
         if (chunkX == chunkOriginX && chunkZ == chunkOriginZ) {
             return UpsideDownBiome.ORIGIN.getBiome();
-        } else if (RED_INVERTED_SOURCE.contains(sourceBiome)) {
-            return UpsideDownBiome.RED_INVERTED.getBiome();
         } else {
-            return UpsideDownBiome.INVERTED.getBiome();
+            return getAssociatedBiome(sourceBiome).getBiome();
         }
     }
 
@@ -57,5 +55,13 @@ public class UpsideDownBiomeProvider extends BiomeProvider {
         return Arrays.stream(UpsideDownBiome.values())
                 .map(UpsideDownBiome::getBiome)
                 .toList();
+    }
+
+    public static UpsideDownBiome getAssociatedBiome(Biome biome) {
+        if (RED_INVERTED_SOURCE.contains(biome)) {
+            return UpsideDownBiome.RED_INVERTED;
+        } else {
+            return UpsideDownBiome.INVERTED;
+        }
     }
 }

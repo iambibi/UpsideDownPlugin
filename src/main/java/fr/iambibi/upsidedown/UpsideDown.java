@@ -1,6 +1,7 @@
 package fr.iambibi.upsidedown;
 
 import fr.iambibi.upsidedown.additions.OriginTask;
+import fr.iambibi.upsidedown.commands.CommandManager;
 import fr.iambibi.upsidedown.datapack.UpsideDownDatapack;
 import fr.iambibi.upsidedown.generation.generator.UpsideDownGenerator;
 import fr.iambibi.upsidedown.generation.UpsideDownWorldManager;
@@ -46,16 +47,8 @@ public class UpsideDown extends JavaPlugin {
         int originY = getConfig().getInt("origin.y");
         int originZ = getConfig().getInt("origin.z");
 
-        //todo: remove palette config + make palette assocaciated to biome
-        String paletteId = getConfig().getString("palette");
-
         if (mainWorldName == null) {
             getSLF4JLogger().error("Erreur de config : main_world est nul !");
-            return;
-        }
-
-        if (paletteId == null) {
-            getSLF4JLogger().error("Erreur de config : palette est nul !");
             return;
         }
 
@@ -67,6 +60,7 @@ public class UpsideDown extends JavaPlugin {
 
         /* INIT */
         UpsideDownWorldManager.init(upsideDownWorldName);
+        CommandManager.init();
 
         /* MAIN */
         World upsideDownWorld = UpsideDownWorldManager.createInvertedWorld(mainWorld, upsideDownWorldName, originX, originZ, radius);
@@ -82,8 +76,7 @@ public class UpsideDown extends JavaPlugin {
                 originX,
                 originY,
                 originZ,
-                radius,
-                PaletteRegistry.get(paletteId)
+                radius
         );
 
         if (UpsideDownWorldManager.hasSeedChanged())
