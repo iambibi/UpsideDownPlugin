@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.block.*;
 import org.bukkit.block.sign.Side;
 import org.bukkit.block.sign.SignSide;
@@ -17,6 +18,17 @@ import java.util.List;
 import java.util.Random;
 
 public class MirrorBlockStates {
+    //todo: test all supported block states (BARREL, FURNACE, BEACON, SPAWNER, ect.)
+    public static final List<Material> BLOCK_STATES_SUPPORTED = new ArrayList<>() {
+        {
+            addAll(Tag.ALL_SIGNS.getValues());
+            addAll(Tag.ALL_HANGING_SIGNS.getValues());
+            addAll(Tag.ITEMS_SKULLS.getValues());
+            add(Material.CHISELED_BOOKSHELF);
+            add(Material.LECTERN);
+            add(Material.CHEST);
+        }
+    };
     public static void mirrorBlockState(BlockState sourceState, BlockState targetState) {
         if (sourceState instanceof Sign src && targetState instanceof Sign trg) {
             for (Side side : Side.values()) {
