@@ -48,7 +48,7 @@ public enum UpsideDownBiomeRegistry {
                             0.00031
                     ),
             NamespacedKey.fromString(UpsideDownDatapack.DATAPACK_NAMESPACE + ":origin"),
-            PaletteRegistry.get("blue")
+            "blue"
     ),
     INVERTED(
             new BiomeInjector()
@@ -88,7 +88,7 @@ public enum UpsideDownBiomeRegistry {
                             0.00111
                     ),
             NamespacedKey.fromString(UpsideDownDatapack.DATAPACK_NAMESPACE + ":inverted"),
-            PaletteRegistry.get("blue")
+            "blue"
     ),
     RED_INVERTED(
             new BiomeInjector()
@@ -125,21 +125,25 @@ public enum UpsideDownBiomeRegistry {
                             0.000111
                     ),
             NamespacedKey.fromString(UpsideDownDatapack.DATAPACK_NAMESPACE + ":red_inverted"),
-            PaletteRegistry.get("red")
+            "red"
     ),
     ;
 
     private final NamespacedKey biomeKey;
     private final BiomeInjector injector;
-    private final Palette.BlockPalette palette;
+    private final String paletteId;
 
-    UpsideDownBiomeRegistry(BiomeInjector injector, NamespacedKey biomeKey, Palette.BlockPalette palette) {
+    UpsideDownBiomeRegistry(BiomeInjector injector, NamespacedKey biomeKey, String paletteId) {
         this.injector = injector;
         this.biomeKey = biomeKey;
-        this.palette = palette;
+        this.paletteId = paletteId;
     }
 
     public Biome getBiome() {
         return RegistryAccess.registryAccess().getRegistry(RegistryKey.BIOME).get(biomeKey);
+    }
+
+    public Palette.BlockPalette getPalette() {
+        return PaletteRegistry.get(paletteId);
     }
 }
