@@ -1,4 +1,7 @@
-package fr.iambibi.upsidedown.generation.palette;
+package fr.iambibi.upsidedown.registry;
+
+import fr.iambibi.upsidedown.registry.palette.BluePaletteBlock;
+import fr.iambibi.upsidedown.registry.palette.RedPaletteBlock;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,6 +11,7 @@ public class PaletteRegistry {
     private static final Map<String, Palette.BlockPalette> PALETTES = new HashMap<>();
     static {
         register(new BluePaletteBlock());
+        register(new RedPaletteBlock());
     }
 
     public static void register(Palette.BlockPalette palette) {

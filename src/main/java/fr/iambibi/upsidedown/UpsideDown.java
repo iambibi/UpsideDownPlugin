@@ -5,7 +5,6 @@ import fr.iambibi.upsidedown.commands.CommandManager;
 import fr.iambibi.upsidedown.datapack.UpsideDownDatapack;
 import fr.iambibi.upsidedown.generation.generator.UpsideDownGenerator;
 import fr.iambibi.upsidedown.generation.UpsideDownWorldManager;
-import fr.iambibi.upsidedown.generation.palette.PaletteRegistry;
 import io.papermc.paper.datapack.Datapack;
 import lombok.Getter;
 import org.bukkit.*;

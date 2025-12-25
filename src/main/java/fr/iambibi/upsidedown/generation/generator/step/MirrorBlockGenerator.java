@@ -1,6 +1,6 @@
 package fr.iambibi.upsidedown.generation.generator.step;
 
-import fr.iambibi.upsidedown.generation.UpsideDownBiome;
+import fr.iambibi.upsidedown.registry.UpsideDownBiomeRegistry;
 import fr.iambibi.upsidedown.generation.UpsideDownBiomeProvider;
 import fr.iambibi.upsidedown.generation.generator.GenerationContext;
 import fr.iambibi.upsidedown.generation.mirror.MirrorBlockData;
@@ -16,11 +16,11 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class MirrorBlockGenerator implements GenerationStep {
 
-    private final int CHUNKS_BY_TICK = 20;
+    private final int CHUNKS_PER_TICK = 20;
+
     @Override
     public void start(GenerationContext ctx, Runnable onComplete) {
         ctx.plugin.getLogger().info("Start UpsideDown block generation");
@@ -31,7 +31,7 @@ public class MirrorBlockGenerator implements GenerationStep {
 
         ctx.plugin.getLogger().info("Start UpsideDown generation (" + totalChunks + " chunks to process)");
 
-        Map<UpsideDownBiome, Map<Material, List<Material>>> paletteCache = Arrays.stream(UpsideDownBiome.values())
+        Map<UpsideDownBiomeRegistry, Map<Material, List<Material>>> paletteCache = Arrays.stream(UpsideDownBiomeRegistry.values())
                 .collect(HashMap::new,
                         (map, biome) -> map.put(biome, biome.getPalette().buildReplacementCache()),
                         HashMap::putAll);
@@ -42,7 +42,7 @@ public class MirrorBlockGenerator implements GenerationStep {
 
             @Override
             public void run() {
-                for (int batchIndex = 0; batchIndex < CHUNKS_BY_TICK; batchIndex++) {
+                for (int batchIndex = 0; batchIndex < CHUNKS_PER_TICK ; batchIndex++) {
                     if (chunkX > chunkRadius) {
                         cancel();
                         ctx.plugin.getLogger().info("UpsideDown world generation finished (" + processedChunks[0] + " chunks)");
@@ -69,7 +69,7 @@ public class MirrorBlockGenerator implements GenerationStep {
             }
 
             private void processAndPlaceChunk(GenerationContext ctx, int chunkX, int chunkZ,
-                                              Map<UpsideDownBiome, Map<Material, List<Material>>> paletteCache) {
+                                              Map<UpsideDownBiomeRegistry, Map<Material, List<Material>>> paletteCache) {
                 ChunkSnapshot snapshot = ctx.sourceWorld.getChunkAt(chunkX, chunkZ).getChunkSnapshot(true, true, false);
                 ctx.sourceWorld.unloadChunkRequest(chunkX, chunkZ);
 
@@ -90,7 +90,7 @@ public class MirrorBlockGenerator implements GenerationStep {
                             int mz = mirrored[2];
 
                             BlockData mirroredData = MirrorBlockData.mirrorBlockData(data.clone());
-                            UpsideDownBiome upsideDownBiome = UpsideDownBiomeProvider.getAssociatedBiome(snapshot.getBiome(x, y, z));
+                            UpsideDownBiomeRegistry upsideDownBiome = UpsideDownBiomeProvider.getAssociatedBiome(snapshot.getBiome(x, y, z));
                             mirroredData = upsideDownBiome.getPalette().applyToBlockData(mirroredData, paletteCache.get(upsideDownBiome));
 
                             int targetChunkX = mx >> 4;

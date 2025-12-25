@@ -1,36 +1,42 @@
-package fr.iambibi.upsidedown.generation.palette;
+package fr.iambibi.upsidedown.registry.palette;
 
+import fr.iambibi.upsidedown.registry.Palette;
 import org.bukkit.Material;
-import java.util.List;
-import java.util.Set;
 import org.bukkit.Tag;
 
-public class BluePaletteBlock implements Palette.BlockPalette {
+import java.util.List;
+import java.util.Set;
+
+public class RedPaletteBlock implements Palette.BlockPalette {
 
     private final List<Palette.BlockReplacement> replacements = List.of(
             new Palette.BlockReplacement(
                     Set.of(Material.DEEPSLATE),
-                    Set.of(Material.SCULK, Material.DEEPSLATE)
+                    Set.of(Material.NETHERRACK, Material.DEEPSLATE)
             ),
             new Palette.BlockReplacement(
                     Set.of(Material.TUFF),
-                    Set.of(Material.SCULK, Material.TUFF)
+                    Set.of(Material.NETHERRACK, Material.TUFF)
             ),
             new Palette.BlockReplacement(
                     Set.of(Material.ANDESITE),
-                    Set.of(Material.SCULK, Material.ANDESITE)
+                    Set.of(Material.NETHERRACK, Material.ANDESITE)
             ),
             new Palette.BlockReplacement(
                     Set.of(Material.DIORITE),
-                    Set.of(Material.SCULK, Material.DIORITE)
+                    Set.of(Material.NETHERRACK, Material.DIORITE)
             ),
             new Palette.BlockReplacement(
                     Tag.LEAVES.getValues(),
-                    Set.of(Material.AIR)
+                    Set.of(Material.NETHER_WART_BLOCK)
+            ),
+            new Palette.BlockReplacement(
+                    Set.of(Material.CACTUS),
+                    Set.of(Material.SHROOMLIGHT)
             ),
             new Palette.BlockReplacement(
                     Tag.FLOWERS.getValues(),
-                    Set.of(Material.SMALL_AMETHYST_BUD, Material.MEDIUM_AMETHYST_BUD)
+                    Set.of(Material.CRIMSON_ROOTS, Material.CRIMSON_FUNGUS)
             ),
             new Palette.BlockReplacement(
                     Set.of(Material.TORCH, Material.TALL_GRASS, Material.SHORT_GRASS, Material.SWEET_BERRY_BUSH, Material.VINE),
@@ -44,7 +50,7 @@ public class BluePaletteBlock implements Palette.BlockPalette {
 
     @Override
     public String id() {
-        return "blue";
+        return "red";
     }
 
     @Override

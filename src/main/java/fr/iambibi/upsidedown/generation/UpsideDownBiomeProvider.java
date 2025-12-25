@@ -1,5 +1,6 @@
 package fr.iambibi.upsidedown.generation;
 
+import fr.iambibi.upsidedown.registry.UpsideDownBiomeRegistry;
 import fr.iambibi.upsidedown.utils.CoordinatesUtils;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
@@ -8,7 +9,6 @@ import org.bukkit.generator.WorldInfo;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -44,7 +44,7 @@ public class UpsideDownBiomeProvider extends BiomeProvider {
         Biome sourceBiome = sourceWorld.getBiome(mirrorCoordinates[0], mirrorCoordinates[1], mirrorCoordinates[2]);
 
         if (chunkX == chunkOriginX && chunkZ == chunkOriginZ) {
-            return UpsideDownBiome.ORIGIN.getBiome();
+            return UpsideDownBiomeRegistry.ORIGIN.getBiome();
         } else {
             return getAssociatedBiome(sourceBiome).getBiome();
         }
@@ -52,16 +52,16 @@ public class UpsideDownBiomeProvider extends BiomeProvider {
 
     @Override
     public @NotNull List<Biome> getBiomes(@NotNull WorldInfo worldInfo) {
-        return Arrays.stream(UpsideDownBiome.values())
-                .map(UpsideDownBiome::getBiome)
+        return Arrays.stream(UpsideDownBiomeRegistry.values())
+                .map(UpsideDownBiomeRegistry::getBiome)
                 .toList();
     }
 
-    public static UpsideDownBiome getAssociatedBiome(Biome biome) {
+    public static UpsideDownBiomeRegistry getAssociatedBiome(Biome biome) {
         if (RED_INVERTED_SOURCE.contains(biome)) {
-            return UpsideDownBiome.RED_INVERTED;
+            return UpsideDownBiomeRegistry.RED_INVERTED;
         } else {
-            return UpsideDownBiome.INVERTED;
+            return UpsideDownBiomeRegistry.INVERTED;
         }
     }
 }

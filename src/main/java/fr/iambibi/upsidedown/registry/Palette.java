@@ -1,7 +1,6 @@
-package fr.iambibi.upsidedown.generation.palette;
+package fr.iambibi.upsidedown.registry;
 
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 
 import java.util.*;
@@ -17,7 +16,7 @@ public class Palette {
             for (BlockReplacement replacement : replacements()) {
                 List<Material> targetList = new ArrayList<>(replacement.targets());
                 for (Material source : replacement.sources()) {
-                    cache.put(source, targetList);
+                    cache.putIfAbsent(source, targetList);
                 }
             }
             return cache;
@@ -33,16 +32,6 @@ public class Palette {
             }
 
             return data;
-        }
-
-        default void apply(Block block, Map<Material, List<Material>> cache) {
-            Material original = block.getType();
-            List<Material> targets = cache.get(original);
-
-            if (targets != null && !targets.isEmpty()) {
-                Material newMaterial = pickRandom(targets);
-                block.setType(newMaterial, false);
-            }
         }
 
         private static Material pickRandom(List<Material> materials) {

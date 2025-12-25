@@ -2,7 +2,6 @@ package fr.iambibi.upsidedown.generation.generator;
 
 import fr.iambibi.upsidedown.UpsideDown;
 import fr.iambibi.upsidedown.UpsideDownInfo;
-import fr.iambibi.upsidedown.generation.palette.Palette;
 import org.bukkit.World;
 
 public class GenerationContext {

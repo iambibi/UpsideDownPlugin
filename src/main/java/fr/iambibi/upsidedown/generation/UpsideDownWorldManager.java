@@ -72,8 +72,8 @@ public class UpsideDownWorldManager {
 
         creator.environment(World.Environment.NORMAL);
         creator.type(WorldType.FLAT);
-        creator.generatorSettings("{\"biome\":\"upsidedown:inverted\",\"layers\":[{\"block\":\"minecraft:air\",\"height\":1}]}");
         creator.biomeProvider(new UpsideDownBiomeProvider(sourceWorld, originX, originZ));
+        creator.generatorSettings("{\"biome\":\"minecraft:the_void\",\"layers\":[{\"block\":\"minecraft:air\",\"height\":1}]}");
         creator.generateStructures(false);
         creator.generator(new WallChunkGenerator(originX, originZ, radius));
 
