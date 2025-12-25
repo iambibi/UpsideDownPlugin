@@ -111,7 +111,7 @@ public enum UpsideDownBiomeRegistry {
                     .addAttribute("visual/fog_end_distance", 112.0)
                     .addAttribute("visual/sky_color", "#aa0004")
                     .ambientSoundMood(
-                            Sound.sound(Key.key("minecraft:ambient.basalt_deltas.mo"), Sound.Source.AMBIENT, 1f, 0.6f),
+                            Sound.sound(Key.key("minecraft:ambient.basalt_deltas.mood"), Sound.Source.AMBIENT, 1f, 0.6f),
                             6000,
                             2,
                             8
@@ -129,16 +129,17 @@ public enum UpsideDownBiomeRegistry {
     ),
     ;
 
-    private final Registry<@NotNull Biome> registry = RegistryAccess.registryAccess().getRegistry(RegistryKey.BIOME);
     private final NamespacedKey biomeKey;
     private final BiomeInjector injector;
-    private final Biome biome;
     private final Palette.BlockPalette palette;
 
     UpsideDownBiomeRegistry(BiomeInjector injector, NamespacedKey biomeKey, Palette.BlockPalette palette) {
         this.injector = injector;
         this.biomeKey = biomeKey;
-        this.biome = registry.get(biomeKey);
         this.palette = palette;
+    }
+
+    public Biome getBiome() {
+        return RegistryAccess.registryAccess().getRegistry(RegistryKey.BIOME).get(biomeKey);
     }
 }
