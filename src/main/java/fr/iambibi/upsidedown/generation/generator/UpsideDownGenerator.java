@@ -22,6 +22,8 @@ public class UpsideDownGenerator {
     }
 
     public void start() {
+        context.plugin.getLogger().info("Start UpsideDown generation");
+
         runNextStep();
     }
 

@@ -120,9 +120,18 @@ public class StructureUtils {
      * @param target  The lowest (min corner) location where to place the structure.
      * @param mirrorX Whether to mirror the structure on the X axis (ignores block rotation).
      * @param mirrorZ Whether to mirror the structure on the Z axis (ignores block rotation).
+     * @param placeAir Whether to place air.
+     * @paramplaceOnGround Whether to place the structure on the ground.
      * @throws IOException If the NBT file is malformed or unreadable.
      */
-    public static void placeStructure(CachedStructure cached, Location target, boolean mirrorX, boolean mirrorZ, boolean placeAir) {
+    public static void placeStructure(
+            CachedStructure cached,
+            Location target,
+            boolean mirrorX,
+            boolean mirrorZ,
+            boolean placeAir,
+            boolean placeOnGround
+    ) {
         Bukkit.getScheduler().runTaskAsynchronously(UpsideDown.getInstance(), () -> {
             try {
                 List<int[]> originalBlocks = cached.blocksToPlace();
@@ -174,46 +183,49 @@ public class StructureUtils {
                         ServerLevel handle = ((CraftWorld) world).getHandle();
 
                         Map<Long, ChunkSnapshot> snapshots = new HashMap<>();
-                        int floating = 0;
-                        int checked = 0;
-                        for (int i = 0; i < baseSolidCells.size(); i += 3) {
-                            int[] rc = baseSolidCells.get(i);
-                            int worldX = baseX + rc[0];
-                            int worldZ = baseZ + rc[1];
-                            int chunkX = worldX >> 4;
-                            int chunkZ = worldZ >> 4;
-                            long key = (((long) chunkX) << 32) | (chunkZ & 0xffffffffL);
 
-                            Chunk chunk = loadedChunks.get(key);
-                            if (chunk == null || !chunk.isLoaded()) {
-                                floating++;
+                        if (placeOnGround) {
+                            int floating = 0;
+                            int checked = 0;
+                            for (int i = 0; i < baseSolidCells.size(); i += 3) {
+                                int[] rc = baseSolidCells.get(i);
+                                int worldX = baseX + rc[0];
+                                int worldZ = baseZ + rc[1];
+                                int chunkX = worldX >> 4;
+                                int chunkZ = worldZ >> 4;
+                                long key = (((long) chunkX) << 32) | (chunkZ & 0xffffffffL);
+
+                                Chunk chunk = loadedChunks.get(key);
+                                if (chunk == null || !chunk.isLoaded()) {
+                                    floating++;
+                                    checked++;
+                                    continue;
+                                }
+
+                                ChunkSnapshot snap = snapshots.get(key);
+                                if (snap == null) {
+                                    snap = chunk.getChunkSnapshot();
+                                    snapshots.put(key, snap);
+                                }
+                                int localX = Math.floorMod(worldX, 16);
+                                int localZ = Math.floorMod(worldZ, 16);
+
+                                if (baseY - 1 < world.getMinHeight()) {
+                                    floating++;
+                                    checked++;
+                                    continue;
+                                }
+
+                                Material mat = snap.getBlockType(localX, baseY - 1, localZ);
+                                if (mat.isAir() || !mat.isSolid()) {
+                                    floating++;
+                                }
                                 checked++;
-                                continue;
                             }
 
-                            ChunkSnapshot snap = snapshots.get(key);
-                            if (snap == null) {
-                                snap = chunk.getChunkSnapshot();
-                                snapshots.put(key, snap);
+                            if (checked > 0 && ((double) floating / checked) > 0.40D) {
+                                return;
                             }
-                            int localX = Math.floorMod(worldX, 16);
-                            int localZ = Math.floorMod(worldZ, 16);
-
-                            if (baseY - 1 < world.getMinHeight()) {
-                                floating++;
-                                checked++;
-                                continue;
-                            }
-
-                            Material mat = snap.getBlockType(localX, baseY - 1, localZ);
-                            if (mat.isAir() || !mat.isSolid()) {
-                                floating++;
-                            }
-                            checked++;
-                        }
-
-                        if (checked > 0 && ((double) floating / checked) > 0.40D) {
-                            return;
                         }
 
                         final int batchSize = 2000;

@@ -23,13 +23,11 @@ public class MirrorBlockGenerator implements GenerationStep {
 
     @Override
     public void start(GenerationContext ctx, Runnable onComplete) {
-        ctx.plugin.getLogger().info("Start UpsideDown block generation");
-
         int chunkRadius = ctx.radius / 16 + 1;
         int totalChunks = (chunkRadius * 2 + 1) * (chunkRadius * 2 + 1);
         int[] processedChunks = {0};
 
-        ctx.plugin.getLogger().info("Start UpsideDown generation (" + totalChunks + " chunks to process)");
+        ctx.plugin.getLogger().info("Start UpsideDown block generation (" + totalChunks + " chunks to process)");
 
         Map<UpsideDownBiomeRegistry, Map<Material, List<Material>>> paletteCache = Arrays.stream(UpsideDownBiomeRegistry.values())
                 .collect(HashMap::new,

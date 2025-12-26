@@ -19,7 +19,7 @@ import static fr.iambibi.upsidedown.generation.UpsideDownBiomeProvider.RED_INVER
 
 public class FeaturesGenerator implements GenerationStep {
 
-    private final int FEATURES_PER_TICK = 4;
+    private final int FEATURES_PER_TICK = 2;
     private final List<String> FLOATING_ISLAND_FEATURES = List.of(
             "island_1",
             "island_2",
@@ -81,8 +81,8 @@ public class FeaturesGenerator implements GenerationStep {
 
                         if (!ctx.isInsideRadius(globalX, globalZ)) continue;
 
-                        int surfaceY = ctx.sourceWorld.getHighestBlockYAt(globalX, globalZ);
-                        if (surfaceY <= ctx.sourceWorld.getMinHeight()) continue;
+                        int surfaceY = ctx.targetWorld.getHighestBlockYAt(globalX, globalZ);
+                        if (surfaceY <= ctx.targetWorld.getMinHeight()) continue;
 
                         Biome biome = ctx.sourceWorld.getBiome(globalX, surfaceY, globalZ);
 
@@ -90,34 +90,35 @@ public class FeaturesGenerator implements GenerationStep {
                                 globalX, surfaceY, globalZ, ctx.originX
                         );
 
-                        if (ThreadLocalRandom.current().nextDouble() <= 0.037
-                                && !RED_INVERTED_SOURCE.contains(biome)) {
-
-                            ServerLevel level = ((CraftWorld) ctx.targetWorld).getHandle();
-                            BlockPos pos = new BlockPos(
-                                    mirrored[0],
-                                    mirrored[1],
-                                    mirrored[2]
-                            );
-                            SculkPatchFeature.place(level, pos, level.random, new SculkPatchConfiguration());
-
-                        }
-
-                        if (RED_INVERTED_SOURCE.contains(biome)) {
-                            for (int y = Math.min(300, surfaceY + 40); y < Math.min(300, surfaceY + 140); y++) {
-                                if (ThreadLocalRandom.current().nextDouble() <= 0.37) {
+                        if (!RED_INVERTED_SOURCE.contains(biome)) {
+                            // Sculk Features
+                            if (ThreadLocalRandom.current().nextDouble() <= 0.037) {
+                                ServerLevel level = ((CraftWorld) ctx.targetWorld).getHandle();
+                                BlockPos pos = new BlockPos(
+                                        mirrored[0],
+                                        mirrored[1],
+                                        mirrored[2]
+                                );
+                                SculkPatchFeature.place(level, pos, level.random, new SculkPatchConfiguration());
+                            }
+                        } else {
+                            // Floating Islands
+                            for (int y = surfaceY+35; y < ctx.targetWorld.getMaxHeight()-50; y+=5) {
+                                if (ThreadLocalRandom.current().nextDouble() <= 0.07) {
                                     Location pos = new Location(
                                             ctx.targetWorld,
                                             mirrored[0],
                                             y,
                                             mirrored[2]
                                     );
+
                                     StructureUtils.placeStructure(
                                             StructureUtils.getCachedStructure(FLOATING_ISLAND_FEATURES.get(ThreadLocalRandom.current().nextInt(FLOATING_ISLAND_FEATURES.size()))),
                                             pos,
                                             true,
                                             true,
-                                            true
+                                            false,
+                                            false
                                     );
                                 }
                             }
