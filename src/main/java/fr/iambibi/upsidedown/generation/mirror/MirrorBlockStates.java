@@ -23,7 +23,8 @@ public class MirrorBlockStates {
         {
             addAll(Tag.ALL_SIGNS.getValues());
             addAll(Tag.ALL_HANGING_SIGNS.getValues());
-            addAll(Tag.ITEMS_SKULLS.getValues());
+            add(Material.PLAYER_HEAD);
+            add(Material.PLAYER_WALL_HEAD);
             add(Material.CHISELED_BOOKSHELF);
             add(Material.LECTERN);
             add(Material.CHEST);
