@@ -67,7 +67,7 @@ public class FeaturesGenerator implements GenerationStep {
                     processedChunks[0]++;
                     int percent = (int) ((processedChunks[0] / (double) totalChunks) * 100);
                     if (processedChunks[0] % Math.max(totalChunks / 10, 1) == 0) {
-                        ctx.plugin.getLogger().info("Features placement progress: " + percent + "% (" + processedChunks[0] + "/" + totalChunks + ")");
+                        ctx.plugin.getLogger().info("Features placement progress: " + percent + "% (" + processedChunks[0] + "/" + totalChunks + " chunks)");
                     }
                 }
             }
@@ -104,7 +104,7 @@ public class FeaturesGenerator implements GenerationStep {
                         } else {
                             // Floating Islands
                             for (int y = surfaceY+35; y < ctx.targetWorld.getMaxHeight()-50; y+=5) {
-                                if (ThreadLocalRandom.current().nextDouble() <= 0.07) {
+                                if (ThreadLocalRandom.current().nextDouble() <= 0.01) {
                                     Location pos = new Location(
                                             ctx.targetWorld,
                                             mirrored[0],

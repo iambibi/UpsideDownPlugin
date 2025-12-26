@@ -4,6 +4,7 @@ import fr.iambibi.upsidedown.utils.ParticleUtils;
 import fr.iambibi.upsidedown.utils.WorldUtils;
 import org.bukkit.*;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LightningStrike;
 import org.bukkit.entity.Player;
 
 public class OriginTask implements Runnable {
@@ -46,8 +47,14 @@ public class OriginTask implements Runnable {
         }
 
         if (ticks % LIGHTNING_INTERVAL == 0) {
-            targetWorld.spawnEntity(origin, EntityType.LIGHTNING_BOLT);
-            targetWorld.strikeLightningEffect(origin);
+            targetWorld.spawn(origin, LightningStrike.class, e ->
+                    e.setFlashCount(4));
+
+            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                if (!WorldUtils.isInUpsideDown(onlinePlayer)) continue;
+
+                targetWorld.strikeLightningEffect(onlinePlayer.getLocation().add(0, -100, 0));
+            }
         }
     }
 }
