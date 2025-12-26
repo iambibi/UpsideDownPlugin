@@ -3,6 +3,7 @@ package fr.iambibi.upsidedown.generation.mirror;
 import org.bukkit.Rotation;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.*;
+import org.bukkit.block.data.type.Campfire;
 import org.bukkit.block.data.type.Chest;
 
 import java.util.Set;
@@ -27,6 +28,12 @@ public class MirrorBlockData {
             }
 
             return chest;
+        }
+
+        if (data instanceof Campfire campfire) {
+            campfire.setSignalFire(false);
+
+            return campfire;
         }
 
         // stairs, pistons, observers, etc.

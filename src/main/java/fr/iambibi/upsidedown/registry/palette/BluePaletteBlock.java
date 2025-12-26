@@ -34,8 +34,12 @@ public class BluePaletteBlock implements Palette.BlockPalette {
                     Set.of(Material.SMALL_AMETHYST_BUD, Material.MEDIUM_AMETHYST_BUD)
             ),
             new Palette.BlockReplacement(
-                    Set.of(Material.TORCH, Material.TALL_GRASS, Material.SHORT_GRASS, Material.SWEET_BERRY_BUSH, Material.VINE),
+                    Set.of(Material.CAVE_VINES_PLANT, Material.CAVE_VINES, Material.TORCH, Material.TALL_GRASS, Material.SHORT_GRASS, Material.SWEET_BERRY_BUSH, Material.VINE),
                     Set.of(Material.AIR)
+            ),
+            new Palette.BlockReplacement(
+                    Set.of(Material.CAMPFIRE),
+                    Set.of(Material.SOUL_CAMPFIRE)
             ),
             new Palette.BlockReplacement(
                     Set.of(Material.LANTERN),
