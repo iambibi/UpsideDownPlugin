@@ -81,7 +81,7 @@ public class FeaturesGenerator implements GenerationStep {
 
                         if (!ctx.isInsideRadius(globalX, globalZ)) continue;
 
-                        int surfaceY = ctx.targetWorld.getHighestBlockYAt(globalX, globalZ);
+                        int surfaceY = ctx.targetWorld.getHighestBlockYAt(globalX, globalZ, HeightMap.WORLD_SURFACE);
                         if (surfaceY <= ctx.targetWorld.getMinHeight()) continue;
 
                         Biome biome = ctx.sourceWorld.getBiome(globalX, surfaceY, globalZ);
@@ -104,7 +104,7 @@ public class FeaturesGenerator implements GenerationStep {
                         } else {
                             // Floating Islands
                             for (int y = surfaceY+35; y < ctx.targetWorld.getMaxHeight()-50; y+=5) {
-                                if (ThreadLocalRandom.current().nextDouble() <= 0.01) {
+                                if (ThreadLocalRandom.current().nextDouble() <= 0.0005) {
                                     Location pos = new Location(
                                             ctx.targetWorld,
                                             mirrored[0],
