@@ -18,7 +18,8 @@ public class CommandManager {
 
     private static void registerCommands() {
         handler.register(
-                new TestCommand()
+                new TestCommand(),
+                new BreachCreateCommand()
         );
     }
 }

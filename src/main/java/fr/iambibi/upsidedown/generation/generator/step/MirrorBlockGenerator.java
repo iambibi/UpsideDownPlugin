@@ -5,7 +5,7 @@ import fr.iambibi.upsidedown.generation.UpsideDownBiomeProvider;
 import fr.iambibi.upsidedown.generation.generator.GenerationContext;
 import fr.iambibi.upsidedown.generation.mirror.MirrorBlockData;
 import fr.iambibi.upsidedown.generation.mirror.MirrorBlockStates;
-import fr.iambibi.upsidedown.utils.CoordinatesUtils;
+import fr.iambibi.upsidedown.utils.MirrorUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
@@ -75,7 +75,7 @@ public class MirrorBlockGenerator implements GenerationStep {
 
                 for (int x = 0; x < 16; x++) {
                     for (int z = 0; z < 16; z++) {
-                        for (int y = 0; y < ctx.sourceWorld.getMaxHeight(); y++) {
+                        for (int y = ctx.sourceWorld.getMinHeight(); y < ctx.sourceWorld.getMaxHeight(); y++) {
                             BlockData data = snapshot.getBlockData(x, y, z);
                             if (data.getMaterial().isAir()) continue;
 
@@ -83,7 +83,7 @@ public class MirrorBlockGenerator implements GenerationStep {
                             int globalZ = chunkZ * 16 + z;
                             if (!ctx.isInsideRadius(globalX, globalZ)) continue;
 
-                            int[] mirrored = CoordinatesUtils.convertCoordinates(globalX, y, globalZ, ctx.originX);
+                            int[] mirrored = MirrorUtils.convertCoordinates(globalX, y, globalZ, ctx.originX);
                             int mx = mirrored[0];
                             int mz = mirrored[2];
 

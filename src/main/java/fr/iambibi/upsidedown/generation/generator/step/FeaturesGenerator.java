@@ -3,7 +3,7 @@ package fr.iambibi.upsidedown.generation.generator.step;
 import fr.iambibi.upsidedown.fixes.postprocesswarn.SculkPatchConfiguration;
 import fr.iambibi.upsidedown.fixes.postprocesswarn.SculkPatchFeature;
 import fr.iambibi.upsidedown.generation.generator.GenerationContext;
-import fr.iambibi.upsidedown.utils.CoordinatesUtils;
+import fr.iambibi.upsidedown.utils.MirrorUtils;
 import fr.iambibi.upsidedown.utils.StructureUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -86,7 +86,7 @@ public class FeaturesGenerator implements GenerationStep {
 
                         Biome biome = ctx.sourceWorld.getBiome(globalX, surfaceY, globalZ);
 
-                        int[] mirrored = CoordinatesUtils.convertCoordinates(
+                        int[] mirrored = MirrorUtils.convertCoordinates(
                                 globalX, surfaceY, globalZ, ctx.originX
                         );
 

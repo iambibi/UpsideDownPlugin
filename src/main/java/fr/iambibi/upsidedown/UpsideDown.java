@@ -1,11 +1,14 @@
 package fr.iambibi.upsidedown;
 
 import fr.iambibi.upsidedown.additions.OriginTask;
+import fr.iambibi.upsidedown.additions.SeedManager;
+import fr.iambibi.upsidedown.additions.breach.BreachManager;
 import fr.iambibi.upsidedown.commands.CommandManager;
 import fr.iambibi.upsidedown.datapack.UpsideDownDatapack;
 import fr.iambibi.upsidedown.generation.generator.UpsideDownGenerator;
 import fr.iambibi.upsidedown.generation.UpsideDownWorldManager;
 import fr.iambibi.upsidedown.registry.PaletteRegistry;
+import fr.iambibi.upsidedown.utils.WorldUtils;
 import io.papermc.paper.datapack.Datapack;
 import lombok.Getter;
 import org.bukkit.*;
@@ -19,6 +22,8 @@ public class UpsideDown extends JavaPlugin {
     static UpsideDown instance;
     @Getter
     static FileConfiguration configs;
+    @Getter
+    static UpsideDownInfo info;
 
     @Override
     public void onEnable() {
@@ -71,7 +76,7 @@ public class UpsideDown extends JavaPlugin {
             return;
         }
 
-        UpsideDownInfo info = new UpsideDownInfo(
+        info = new UpsideDownInfo(
                 mainWorld,
                 upsideDownWorld,
                 originX,
@@ -80,9 +85,35 @@ public class UpsideDown extends JavaPlugin {
                 radius
         );
 
-        if (UpsideDownWorldManager.hasSeedChanged())
+        /* POST-INIT */
+        SeedManager.init();
+        BreachManager.init();
+
+        /* GENERATION CHECKS */
+        if (SeedManager.hasSeedChanged(mainWorldName) && !SeedManager.hasSeedChanged(upsideDownWorldName)) {
+            WorldUtils.deleteWorld(upsideDownWorldName);
+
+            upsideDownWorld = UpsideDownWorldManager.createInvertedWorld(mainWorld, upsideDownWorldName, originX, originZ, radius);
+
+            if (upsideDownWorld == null) {
+                getSLF4JLogger().error("L'UpsideDown '{}' n'a pas pu être créé !", upsideDownWorldName);
+                return;
+            }
+
+            info = new UpsideDownInfo(
+                    mainWorld,
+                    upsideDownWorld,
+                    originX,
+                    originY,
+                    originZ,
+                    radius
+            );
+
+            new UpsideDownGenerator(info).start();
+        } else if (SeedManager.hasSeedChanged(upsideDownWorldName))
             new UpsideDownGenerator(info).start();
 
+        /* TASKS */
         Bukkit.getScheduler().runTaskTimer(
                 this,
                 new OriginTask(upsideDownWorld, originX, originY, originZ),
@@ -93,7 +124,8 @@ public class UpsideDown extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        UpsideDownWorldManager.save();
+        SeedManager.save();
+        BreachManager.save();
     }
 
     public static void registerEvents(Listener... listeners) {

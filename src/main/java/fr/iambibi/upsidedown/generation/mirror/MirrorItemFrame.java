@@ -1,11 +1,10 @@
 package fr.iambibi.upsidedown.generation.mirror;
 
-import fr.iambibi.upsidedown.utils.CoordinatesUtils;
+import fr.iambibi.upsidedown.utils.MirrorUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.ItemFrame;
-import org.bukkit.entity.Painting;
 
 public class MirrorItemFrame {
 
@@ -21,7 +20,7 @@ public class MirrorItemFrame {
         Block attachedBlock =
                 loc.getBlock().getRelative(source.getAttachedFace());
 
-        int[] mirrored = CoordinatesUtils.convertCoordinates(
+        int[] mirrored = MirrorUtils.convertCoordinates(
                 attachedBlock.getX(),
                 attachedBlock.getY(),
                 attachedBlock.getZ(),

@@ -1,27 +1,17 @@
 package fr.iambibi.upsidedown.generation;
 
 import fr.iambibi.upsidedown.UpsideDown;
-import fr.iambibi.upsidedown.datapack.UpsideDownDatapack;
-import fr.iambibi.upsidedown.utils.CoordinatesUtils;
-import io.papermc.paper.registry.RegistryAccess;
-import io.papermc.paper.registry.RegistryKey;
+import fr.iambibi.upsidedown.additions.SeedManager;
+import fr.iambibi.upsidedown.utils.MirrorUtils;
 import org.bukkit.*;
-import org.bukkit.block.Biome;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class UpsideDownWorldManager {
 
     private static UpsideDown plugin;
 
     public static String DIMENSION_NAME;
-    private static File seedFile;
-    private static FileConfiguration seedConfig;
 
     /**
      * Initializes the UpsideDownWorldManager with the specified dimension name.
@@ -31,19 +21,6 @@ public class UpsideDownWorldManager {
         plugin = UpsideDown.getInstance();
 
         DIMENSION_NAME = upsideDownName;
-        seedFile = new File(UpsideDown.getInstance().getDataFolder() + "/data/", "seed.yml");
-        loadSeed();
-    }
-
-    /**
-     * Saves the seed of the upside-down world to the configuration file.
-     */
-    public static void save() {
-        World upsideDown = Bukkit.getWorld(DIMENSION_NAME);
-        if (upsideDown == null) return;
-
-        UpsideDown.getInstance().getSLF4JLogger().info("Saving seed: {}", upsideDown.getSeed());
-        saveSeed(upsideDown.getSeed());
     }
 
     /**
@@ -61,11 +38,11 @@ public class UpsideDownWorldManager {
         File worldFolder = new File(Bukkit.getWorldContainer(), name);
         long seed;
         if (!worldFolder.exists()) {
-            seed = UpsideDownWorldManager.createSeed();
+            seed = SeedManager.createSeed();
             creator.seed(seed);
             plugin.getSLF4JLogger().info("New UpsideDown world created with seed: {}", seed);
         } else {
-            World existing = Bukkit.getWorld(DIMENSION_NAME);
+            World existing = Bukkit.getWorld(name);
             seed = (existing != null) ? existing.getSeed() : creator.seed();
             plugin.getSLF4JLogger().info("Loading existing UpsideDown world with seed: {}", seed);
         }
@@ -82,7 +59,7 @@ public class UpsideDownWorldManager {
         invertedWorld.getWorldBorder().setSize(radius*2);
         invertedWorld.getWorldBorder().setCenter(originX, originZ);
 
-        invertedWorld.setSpawnLocation(CoordinatesUtils.convertLocation(sourceWorld.getSpawnLocation(), originX));
+        invertedWorld.setSpawnLocation(MirrorUtils.convertLocation(sourceWorld.getSpawnLocation(), originX));
 
         invertedWorld.setGameRule(GameRules.LOCATOR_BAR, false);
         invertedWorld.setGameRule(GameRules.KEEP_INVENTORY, false);
@@ -91,56 +68,5 @@ public class UpsideDownWorldManager {
         invertedWorld.setTime(18000);
 
         return invertedWorld;
-    }
-
-    /**
-     * Generates a non-zero random seed.
-     * @return A non-zero random seed.
-     */
-    public static long createSeed() {
-        Random random = ThreadLocalRandom.current();
-        long seed = random.nextLong();
-
-        while (seed == 0) {
-            seed = random.nextLong();
-        }
-
-        return seed;
-    }
-
-    /**
-     * Loads the seed configuration from the seed file.
-     */
-    public static void loadSeed() {
-        if (!seedFile.exists()) {
-            UpsideDown.getInstance().getSLF4JLogger().info("Fichier seed.yml manquant, il sera créé au saveSeed().");
-        }
-        seedConfig = YamlConfiguration.loadConfiguration(seedFile);
-    }
-
-    /**
-     * Saves the specified seed to the configuration file.
-     * @param seed The seed to save.
-     */
-    public static void saveSeed(long seed) {
-        seedConfig.set(DIMENSION_NAME + "_seed", seed);
-        try {
-            seedConfig.save(seedFile);
-        } catch (IOException e) {
-            UpsideDown.getInstance().getSLF4JLogger().error("Cannot save seed of {}", DIMENSION_NAME, e);
-        }
-    }
-
-    /**
-     * Checks if the seed of the upside-down world has changed.
-     * @return True if the seed has changed, false otherwise.
-     */
-    public static boolean hasSeedChanged() {
-        long saved = seedConfig.getLong(DIMENSION_NAME + "_seed", -1);
-        World upsideDown = Bukkit.getWorld(DIMENSION_NAME);
-        if (upsideDown == null) return false;
-
-        long current = upsideDown.getSeed();
-        return saved != current;
     }
 }

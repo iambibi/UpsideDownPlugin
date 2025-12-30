@@ -1,7 +1,7 @@
 package fr.iambibi.upsidedown.generation;
 
 import fr.iambibi.upsidedown.registry.UpsideDownBiomeRegistry;
-import fr.iambibi.upsidedown.utils.CoordinatesUtils;
+import fr.iambibi.upsidedown.utils.MirrorUtils;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.generator.BiomeProvider;
@@ -40,7 +40,7 @@ public class UpsideDownBiomeProvider extends BiomeProvider {
         int chunkOriginX = (int) Math.floor(originX) >> 4;
         int chunkOriginZ = (int) Math.floor(originZ) >> 4;
 
-        int[] mirrorCoordinates = CoordinatesUtils.convertCoordinates(x, y, z, (int) originX);
+        int[] mirrorCoordinates = MirrorUtils.convertCoordinates(x, y, z, (int) originX);
         Biome sourceBiome = sourceWorld.getBiome(mirrorCoordinates[0], mirrorCoordinates[1], mirrorCoordinates[2]);
 
         if (chunkX == chunkOriginX && chunkZ == chunkOriginZ) {

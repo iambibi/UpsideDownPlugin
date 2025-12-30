@@ -1,13 +1,9 @@
 package fr.iambibi.upsidedown.generation.mirror;
 
-import fr.iambibi.upsidedown.utils.CoordinatesUtils;
+import fr.iambibi.upsidedown.utils.MirrorUtils;
 import org.bukkit.Location;
-import org.bukkit.Rotation;
 import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.ItemFrame;
 
 public class MirrorArmorStand {
 
@@ -19,7 +15,17 @@ public class MirrorArmorStand {
      * @param originX     The X origin for mirroring
      */
     public static void mirrorAndSpawn(ArmorStand source, World targetWorld, int originX) {
-        Location mirroredLoc = CoordinatesUtils.convertLocation(source.getLocation(), originX);
+        Location mirroredLoc = MirrorUtils.convertLocation(source.getLocation(), originX);
+
+        mirroredLoc.setX(mirroredLoc.getX()+1);
+
+        float yaw = mirroredLoc.getYaw();
+        float mirroredYaw = -yaw;
+
+        if (mirroredYaw > 180) mirroredYaw -= 360;
+        if (mirroredYaw < -180) mirroredYaw += 360;
+
+        mirroredLoc.setYaw(mirroredYaw);
 
         targetWorld.spawn(mirroredLoc, ArmorStand.class, stand -> {
             stand.setCanPickupItems(false);
